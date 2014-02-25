@@ -1,7 +1,12 @@
 Lab3_FontController.gise
 Lab3_FontController.xise
+README.md
 TDMS_encoder.vhd
 _xmsgs
+atlys_lab_font_controller.lso
+atlys_lab_font_controller.prj
+atlys_lab_font_controller.stx
+atlys_lab_font_controller.xst
 atlys_lab_video.lso
 atlys_lab_video.prj
 atlys_lab_video.stx
@@ -11,7 +16,6 @@ char_screen_buffer.lso
 char_screen_buffer.prj
 char_screen_buffer.stx
 char_screen_buffer.xst
-constraints.ucf
 dvid.vhd
 font_rom.lso
 font_rom.prj
