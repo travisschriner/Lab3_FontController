@@ -4,7 +4,7 @@
 -- 
 -- Create Date:    12:02:27 01/31/2014 
 -- Design Name: 
--- Module Name:    atlys_lab_video - Behavioral 
+-- Module Name:    atlys_lab_font_controller - Behavioral 
 ----------------------------------------------------------------------------------
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
@@ -13,7 +13,7 @@ use IEEE.NUMERIC_STD.ALL;
 library UNISIM;
 use UNISIM.VComponents.all;
 
-entity atlys_lab_video is
+entity atlys_lab_font_controller is
     port ( 
 				 clk    : in  std_logic; -- 100 MHz
              reset  : in  std_logic;
@@ -23,12 +23,12 @@ entity atlys_lab_video is
              tmds   : out std_logic_vector(3 downto 0);
              tmdsb  : out std_logic_vector(3 downto 0)
          );
-end atlys_lab_video;
+end atlys_lab_font_controller;
 
-architecture Schriner_VGA of atlys_lab_video is
-Signal red_s, green_s, blue_s, clock_s, h_sync, v_sync, v_completed, blank, pixel_clk, serialize_clk, serialize_clk_n : std_logic;
-signal row, column, ball_x, ball_y, paddle_y : unsigned(10 downto 0);
-signal red, green, blue : std_logic_vector (7 downto 0);
+architecture Schriner_Font_Controller of atlys_lab_font_controller is
+Signal red_s, green_s, blue_s, clock_s, h_sync, v_sync, v_completed, blank, pixel_clk, serialize_clk, serialize_clk_n, write_en : std_logic;
+signal row, column : unsigned (10 downto 0);
+signal red, green, blue, ascii_to_write : std_logic_vector (7 downto 0);
 	 
 	 
 begin
@@ -72,17 +72,18 @@ begin
 							column      => column
 						);
 						
-		pixel_gen_instance : entity work.pixel_gen(behavioral)
-			port map ( 	row      => row,
-							column   => column,
-							blank    => blank,
-							ball_x 	=> ball_x,
-							ball_y	=>	ball_y,
-							paddle_y	=>	paddle_y,
-							r        => red,
-							g        => green,
-					 		b        => blue
-						);
+		character_gen : entity work.character_gen (behavioral)
+			port map(   clk            => clk,
+							blank          =>	blank,
+							row            => row,
+							column         => column,
+							ascii_to_write =>	ascii_to_write,
+							write_en       => write_en,
+						   r					=> red,
+							g					=> green,
+							b              => blue
+					);
+		
 	
 			
 			
@@ -118,4 +119,4 @@ begin
         ( O  => TMDS(3), OB => TMDSB(3), I  => clock_s );
 
 
-end Schriner_VGA;
+end Schriner_Font_Controller;

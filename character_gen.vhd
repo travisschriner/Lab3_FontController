@@ -8,10 +8,7 @@
 ----------------------------------------------------------------------------------
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
-
--- Uncomment the following library declaration if using
--- arithmetic functions with Signed or Unsigned values
---use IEEE.NUMERIC_STD.ALL;
+use IEEE.NUMERIC_STD.ALL;
 
 -- Uncomment the following library declaration if instantiating
 -- any Xilinx primitives in this code.
@@ -21,8 +18,8 @@ use IEEE.STD_LOGIC_1164.ALL;
 entity character_gen is
     port ( clk            : in std_logic;
            blank          : in std_logic;
-           row            : in std_logic_vector(10 downto 0);
-           column         : in std_logic_vector(10 downto 0);
+           row            : in unsigned(10 downto 0);
+           column         : in unsigned(10 downto 0);
            ascii_to_write : in std_logic_vector(7 downto 0);
            write_en       : in std_logic;
            r,g,b          : out std_logic_vector(7 downto 0)
