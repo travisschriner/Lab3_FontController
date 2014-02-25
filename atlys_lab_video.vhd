@@ -15,13 +15,13 @@ use UNISIM.VComponents.all;
 
 entity atlys_lab_video is
     port ( 
-             clk   : in  std_logic; -- 100 MHz
-             reset : in  std_logic;
-				 SW7   : in STD_LOGIC;
-				 BTNU	 : in STD_LOGIC;
-				 BTND	 : in STD_LOGIC;
-             tmds  : out std_logic_vector(3 downto 0);
-             tmdsb : out std_logic_vector(3 downto 0)
+				 clk    : in  std_logic; -- 100 MHz
+             reset  : in  std_logic;
+             start  : in  std_logic;
+             switch : in  std_logic_vector(7 downto 0);
+             led    : out std_logic_vector(7 downto 0);
+             tmds   : out std_logic_vector(3 downto 0);
+             tmdsb  : out std_logic_vector(3 downto 0)
          );
 end atlys_lab_video;
 
@@ -83,18 +83,7 @@ begin
 							g        => green,
 					 		b        => blue
 						);
-		pong_control_instance : entity work.pong_control(behavioral)
-			port map (	clk			=> clk,
-							reset			=> reset,
-							up				=>	BTNU,
-							down			=> BTND,
-							SW7      => SW7,
-							v_completed => v_completed,
-							ball_x		=> ball_x,
-							ball_y		=> ball_y,
-							paddle_y		=> paddle_y
-					);
-			
+	
 			
 			
 		   
