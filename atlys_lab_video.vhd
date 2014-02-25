@@ -26,7 +26,7 @@ entity atlys_lab_font_controller is
 end atlys_lab_font_controller;
 
 architecture Schriner_Font_Controller of atlys_lab_font_controller is
-Signal red_s, green_s, blue_s, clock_s, h_sync, v_sync, v_completed, blank, pixel_clk, serialize_clk, serialize_clk_n, write_en : std_logic;
+Signal red_s, green_s, blue_s, clock_s, h_sync, v_sync, v_completed, blank, pixel_clk, serialize_clk, serialize_clk_n, write_en, input, pulse : std_logic;
 signal row, column : unsigned (10 downto 0);
 signal red, green, blue, ascii_to_write : std_logic_vector (7 downto 0);
 	 
@@ -83,6 +83,14 @@ begin
 							g					=> green,
 							b              => blue
 					);
+					
+		input_to_pulse : entity work.input_to_pulse (behavioral)
+			 port map( clk          	=> clk,
+						  reset        	=>	reset,
+						  input        	=>	input,
+						  pulse        	=>	pulse
+						);
+
 		
 	
 			
