@@ -1,12 +1,12 @@
 Lab3_FontController.gise
 Lab3_FontController.xise
-README.md
 TDMS_encoder.vhd
 _xmsgs
 atlys_lab_font_controller.lso
 atlys_lab_font_controller.prj
 atlys_lab_font_controller.stx
 atlys_lab_font_controller.xst
+atlys_lab_font_controller_summary.html
 atlys_lab_video.lso
 atlys_lab_video.prj
 atlys_lab_video.stx
@@ -27,6 +27,7 @@ input_to_pulse.prj
 input_to_pulse.stx
 input_to_pulse.xst
 iseconfig
+nes_controller.vhd
 pixel_gen.vhd
 v_sync_gen.vhd
 vga_sync.vhd
