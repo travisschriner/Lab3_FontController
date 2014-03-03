@@ -5,17 +5,6 @@
 -- Create Date:    11:07:36 02/21/2014 
 -- Design Name: 
 -- Module Name:    Mux_8_1 - Behavioral 
--- Project Name: 
--- Target Devices: 
--- Tool versions: 
--- Description: 
---
--- Dependencies: 
---
--- Revision: 
--- Revision 0.01 - File Created
--- Additional Comments: 
---
 ----------------------------------------------------------------------------------
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
