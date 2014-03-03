@@ -2,9 +2,9 @@
 -- Company: USAFA DFEC
 -- Engineer: C2C Travis Schriner
 -- 
--- Create Date:    12:02:27 01/31/2014 
+-- Create Date:    10:34:25 01/29/2014 
 -- Design Name: 
--- Module Name:    atlys_lab_font_controller - Behavioral 
+-- Module Name:    atlys_lab_Font_Controller - Behavioral 
 ----------------------------------------------------------------------------------
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
@@ -13,32 +13,35 @@ use IEEE.NUMERIC_STD.ALL;
 library UNISIM;
 use UNISIM.VComponents.all;
 
-entity atlys_lab_font_controller is
-    port ( 
-				 clk    : in  std_logic; -- 100 MHz
-             reset  : in  std_logic;
-             start  : in  std_logic;
-             switch : in  std_logic_vector(7 downto 0);
-             led    : out std_logic_vector(7 downto 0);
-             tmds   : out std_logic_vector(3 downto 0);
-             tmdsb  : out std_logic_vector(3 downto 0)
-         );
-end atlys_lab_font_controller;
+entity atlys_lab_Font_Controller is
+  port (
+          clk   	: in  std_logic; -- 100 MHz
+          reset 	: in  std_logic;
+          start   : in  std_logic;
+          switch  : in  std_logic;
+			 led		: out std_logic;
+          tmds  	: out std_logic_vector(3 downto 0);
+          tmdsb 	: out std_logic_vector(3 downto 0)
+  );
+end atlys_lab_Font_Controller;
 
-architecture Schriner_Font_Controller of atlys_lab_font_controller is
-Signal red_s, green_s, blue_s, clock_s, h_sync, v_sync, v_completed, blank, pixel_clk, serialize_clk, serialize_clk_n, write_en, input, pulse : std_logic;
-signal row, column : unsigned (10 downto 0);
-signal red, green, blue, ascii_to_write : std_logic_vector (7 downto 0);
-	 
-	 
+
+
+
+architecture Schriner_top_level of atlys_lab_Font_Controller is
+signal red_s, green_s, blue_s, clock_s, h_sync,  v_sync, v_completed, blank, pixel_clk, serialize_clk, serialize_clk_n, blank_reg, delay1, delay2, WE : std_logic;
+signal row, column, col_reg, col_next_1, col_next_2, row_reg, row_next_1, row_next_2 : unsigned (10 downto 0);
+signal red, blue, green : std_logic_vector (7 downto 0);
+
 begin
 
-    -- Clock divider - creates pixel clock from 100MHz clock
-    inst_DCM_pixel: DCM
+
+ -- Clock divider - creates pixel clock from 100MHz clock
+   	inst_DCM_pixel: DCM
     generic map(
-                   CLKFX_MULTIPLY => 2,
-                   CLKFX_DIVIDE   => 8,
-                   CLK_FEEDBACK   => "1X"
+                CLKFX_MULTIPLY => 2,
+                CLKFX_DIVIDE   => 8,
+                CLK_FEEDBACK   => "1X"
                )
     port map(
                 clkin => clk,
@@ -49,9 +52,9 @@ begin
     -- Clock divider - creates HDMI serial output clock
     inst_DCM_serialize: DCM
     generic map(
-                   CLKFX_MULTIPLY => 10, -- 5x speed of pixel clock
-                   CLKFX_DIVIDE   => 8,
-                   CLK_FEEDBACK   => "1X"
+                CLKFX_MULTIPLY => 10, -- 5x speed of pixel clock
+                CLKFX_DIVIDE   => 8,
+                CLK_FEEDBACK   => "1X"
                )
     port map(
                 clkin => clk,
@@ -60,42 +63,66 @@ begin
                 clkfx180 => serialize_clk_n
             );
 				
-				
-		vga_sync_instance : entity work.vga_sync(behavioral)
-			port map (	clk   		=> pixel_clk,
-							reset  		=> reset,
-							h_sync   	=> h_sync,
-							v_sync   	=> v_sync,
-							v_completed => v_completed,
-							blank       => blank,
-							row         => row,
-							column      => column
-						);
-						
-		character_gen : entity work.character_gen (behavioral)
-			port map(   clk            => clk,
-							blank          =>	blank,
-							row            => row,
-							column         => column,
-							ascii_to_write =>	ascii_to_write,
-							write_en       => write_en,
-						   r					=> red,
-							g					=> green,
-							b              => blue
-					);
-					
-		input_to_pulse : entity work.input_to_pulse (behavioral)
-			 port map( clk          	=> clk,
-						  reset        	=>	reset,
-						  input        	=>	input,
-						  pulse        	=>	pulse
-						);
+--=======================================================
+-----------------ITS A PIPE! GET IT?!--------------------
+--=======================================================
+		process(pixel_clk) is 
+		begin
+			if(rising_edge(pixel_clk)) then
+				delay1 <= blank;
+			end if;
+		end process;
 
-		
+		process(pixel_clk) is
+		begin
+			if(rising_edge(pixel_clk)) then
+				delay2 <= delay1;
+				end if;
+		end process;
+
+		process(pixel_clk) is
+		begin
+			if(rising_edge(pixel_clk)) then
+				blank_reg <= delay2;
+			end if;
+		end process;
+
+
+
+	Inst_vga_sync: entity work.vga_sync(Behavioral) PORT MAP(
+		clk => pixel_clk,
+		reset => reset,
+		h_sync => h_sync,
+		v_sync => v_sync,
+		v_completed => v_completed,
+		blank => blank,
+		row => row,
+		column => column
+	);
+
+	Inst_character_gen: entity work.character_gen(Behavioral) PORT MAP(
+		clk => pixel_clk,
+		blank => blank_reg ,
+		row => std_logic_vector(row),
+		column => std_logic_vector(column),
+		ascii_to_write => "00000011", -- this is the A ascii
+		write_en => WE,
+		r => red,
+		g => green,
+		b => blue 
+	);
+
+
+	Inst_input_to_pulse: entity work.input_to_pulse(Behavioral) PORT MAP(
+		clk => pixel_clk,
+		reset => reset,
+		button => start,
+		button_pulse => WE
+	);
 	
-			
-			
-		   
+		
+
+
     -- Convert VGA signals to HDMI (actually, DVID ... but close enough)
     inst_dvid: entity work.dvid
     port map(
@@ -115,7 +142,6 @@ begin
                 clock_s   => clock_s
             );
 
-
     -- Output the HDMI data on differential signalling pins
     OBUFDS_blue  : OBUFDS port map
         ( O  => TMDS(0), OB => TMDSB(0), I  => blue_s  );
@@ -126,5 +152,4 @@ begin
     OBUFDS_clock : OBUFDS port map
         ( O  => TMDS(3), OB => TMDSB(3), I  => clock_s );
 
-
-end Schriner_Font_Controller;
+end Schriner_Top_Level;
