@@ -83,7 +83,7 @@ begin
 
 
 
-		Inst_Mux_8_1: entity work.Mux_8_1(Behavioral) PORT MAP(
+		Inst_Mux8_1: entity work.Mux8_1(Behavioral) PORT MAP(
 			data => font_data_sig,
 			sel => std_logic_vector(unsigned(col_delay2(2 downto 0))),
 			output => mux_out
@@ -105,7 +105,7 @@ begin
 						  count_reg;
 
 		--Trae explained how this creates the blocks for each character
-		row_col_multiply <= std_logic_vector((unsigned(row_delay1(10 downto 4)) * 80) + unsigned(col_delay2(10 downto 3)));
+		row_col_multiply <= std_logic_vector((unsigned(row(10 downto 4)) * 80) + unsigned(column(10 downto 3)));
 
 
 --=======================================================
