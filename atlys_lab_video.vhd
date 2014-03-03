@@ -30,7 +30,8 @@ end atlys_lab_Font_Controller;
 
 architecture Schriner_top_level of atlys_lab_Font_Controller is
 signal red_s, green_s, blue_s, clock_s, h_sync,  v_sync, v_completed, blank, pixel_clk, serialize_clk, serialize_clk_n, blank_reg, delay1, delay2, WE : std_logic;
-signal row, column, col_reg, col_next_1, col_next_2, row_reg, row_next_1, row_next_2 : unsigned (10 downto 0);
+signal h_sync_delay1, h_sync_delay2, v_sync_delay1, v_sync_delay2 : std_logic;
+signal row, column, col_reg, col_delay1, col_delay2, row_reg, row_delay1, row_delay2 : unsigned (10 downto 0);
 signal red, blue, green : std_logic_vector (7 downto 0);
 
 begin
@@ -83,10 +84,62 @@ begin
 		process(pixel_clk) is
 		begin
 			if(rising_edge(pixel_clk)) then
-				blank_reg <= delay2;
+				blank_reg <= delay1;
+			end if;
+		end process;
+		
+--=======================================================
+-----------------h_sync_Delay--------------------
+--=======================================================
+		process(pixel_clk) is 
+		begin
+			if(rising_edge(pixel_clk)) then
+				h_sync_delay1 <= h_sync;
 			end if;
 		end process;
 
+		process(pixel_clk) is
+		begin
+			if(rising_edge(pixel_clk)) then
+				h_sync_delay2 <= h_sync_delay1;
+				end if;
+		end process;
+
+--		process(pixel_clk) is
+--		begin
+--			if(rising_edge(pixel_clk)) then
+--				row_reg <= row_delay2;
+--			end if;
+--		end process;
+		
+--=======================================================
+-----------------v_sync_delay--------------------
+--=======================================================
+		process(pixel_clk) is 
+		begin
+			if(rising_edge(pixel_clk)) then
+				v_sync_delay1 <= v_sync;
+			end if;
+		end process;
+
+		process(pixel_clk) is
+		begin
+			if(rising_edge(pixel_clk)) then
+				v_sync_delay2 <= v_sync_delay1;
+				end if;
+		end process;
+
+--		process(pixel_clk) is
+--		begin
+--			if(rising_edge(pixel_clk)) then
+--				col_reg <= column;
+--			end if;
+--		end process;
+
+
+--===========================================================
+------------------INSTANTIATIONS!!!--------------------------
+--===========================================================
 
 
 	Inst_vga_sync: entity work.vga_sync(Behavioral) PORT MAP(
@@ -133,8 +186,8 @@ begin
                 green_p   => green,
                 blue_p    => blue,
                 blank     => blank,
-                hsync     => h_sync,
-                vsync     => v_sync,
+                hsync     => h_sync_delay2,
+                vsync     => v_sync_delay2,
                 -- outputs to TMDS drivers
                 red_s     => red_s,
                 green_s   => green_s,

@@ -25,10 +25,10 @@ architecture Behavioral of character_gen is
 
 signal row_col_multiply : std_logic_vector(13 downto 0);
 signal count_reg, count_next: std_logic_vector(11 downto 0);
-signal address, addr_sig : std_logic_vector(10 downto 0);
+signal address, addr_sig, col_delay1, col_delay2, row_delay1 : std_logic_vector(10 downto 0);
 signal rom_data, data_b_sig, font_data_sig : std_logic_vector(7 downto 0);
-signal row_reg, row_next : std_logic_vector(3 downto 0);
-signal col_reg, col_next_1, col_next_2 : std_logic_vector(2 downto 0);
+signal row_reg : std_logic_vector(3 downto 0);
+
 signal mux_out : std_logic;
 
 begin
@@ -53,36 +53,44 @@ begin
 
 		Inst_Mux_8_1: entity work.Mux_8_1(Behavioral) PORT MAP(
 			data => font_data_sig,
-			sel => col_reg,
+			sel => std_logic_vector(unsigned(col_delay2(2 downto 0))),
 			output => mux_out
 		);
 
 
-		--delay column 1
+--=======================================================
+-----------------Col_Delay2--------------------
+--=======================================================
 		process(clk) is 
 		begin
-		if(rising_edge(clk)) then
-			col_next_1 <= (column(2) & column(1) & column(0));
+			if(rising_edge(clk)) then
+				col_delay1 <= column;
 			end if;
 		end process;
 
-		--delay column 2
 		process(clk) is
 		begin
-		if(rising_edge(clk)) then
-			col_reg <= col_next_1;
-			end if;
+			if(rising_edge(clk)) then
+				col_delay2 <= col_delay1;
+				end if;
 		end process;
 
-		--delay row 1
+
+		
+--=======================================================
+-----------------row_delay1--------------------
+--=======================================================
 		process(clk) is 
 		begin
-		if(rising_edge(clk)) then
-			row_reg <= (row(3) & row(2) & row (1) & row(0));
+			if(rising_edge(clk)) then
+				row_delay1 <= row;
 			end if;
 		end process;
 
-		addr_sig <= data_b_sig(6 downto 0) & row_reg ;
+
+
+
+		addr_sig <= data_b_sig(6 downto 0) & std_logic_vector(unsigned(row_delay1(3 downto 0))) ;
 
 
 		count_reg <= std_logic_vector(unsigned(count_next) + 1) when rising_edge(write_en) else
@@ -91,7 +99,9 @@ begin
 		count_next <= (others => '0') when unsigned(count_reg) = to_unsigned(2400, 12)  else
 					count_reg;
 
-		row_col_multiply <= std_logic_vector((unsigned(row(10 downto 4)) * 80) + unsigned(column(10 downto 3)));
+		row_col_multiply <= std_logic_vector((unsigned(row_delay1(10 downto 4)) * 80) + unsigned(col_delay2(10 downto 3)));
+
+
 
 		process(mux_out, blank) is
 		begin
