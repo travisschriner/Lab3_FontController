@@ -27,35 +27,9 @@ signal row_col_multiply : std_logic_vector(13 downto 0);
 signal count_reg, count_next: std_logic_vector(11 downto 0);
 signal address, addr_sig, col_delay1, col_delay2, row_delay1 : std_logic_vector(10 downto 0);
 signal rom_data, data_b_sig, font_data_sig : std_logic_vector(7 downto 0);
-signal row_reg : std_logic_vector(3 downto 0);
-
 signal mux_out : std_logic;
 
 begin
-
-		Inst_char_screen_buffer: entity work.char_screen_buffer(Behavioral) PORT MAP(
-			clk => clk,
-			we => write_en,
-			address_a => count_reg ,
-			address_b => row_col_multiply(11 downto 0),
-			data_in => ascii_to_write,
-			data_out_a => open,
-			data_out_b => data_b_sig
-		);
-
-		Inst_font_rom: entity work.font_rom(arch) PORT MAP(
-			clk => clk ,
-			addr => addr_sig,
-			data =>  font_data_sig
-		);
-
-
-
-		Inst_Mux_8_1: entity work.Mux_8_1(Behavioral) PORT MAP(
-			data => font_data_sig,
-			sel => std_logic_vector(unsigned(col_delay2(2 downto 0))),
-			output => mux_out
-		);
 
 
 --=======================================================
@@ -86,19 +60,51 @@ begin
 				row_delay1 <= row;
 			end if;
 		end process;
+		
+--=======================================================
+-----------------Instantiations--------------------
+--=======================================================		
+
+		Inst_char_screen_buffer: entity work.char_screen_buffer(Behavioral) PORT MAP(
+			clk => clk,
+			we => write_en,
+			address_a => count_reg ,
+			address_b => row_col_multiply(11 downto 0),
+			data_in => ascii_to_write,
+			data_out_a => open,
+			data_out_b => data_b_sig
+		);
+
+		Inst_font_rom: entity work.font_rom(arch) PORT MAP(
+			clk => clk ,
+			addr => addr_sig,
+			data =>  font_data_sig
+		);
 
 
 
+		Inst_Mux_8_1: entity work.Mux_8_1(Behavioral) PORT MAP(
+			data => font_data_sig,
+			sel => std_logic_vector(unsigned(col_delay2(2 downto 0))),
+			output => mux_out
+		);
 
+
+
+--=======================================================
+-----------------combinational_logic---------------------
+--=======================================================
+
+
+
+		--concatinates data sig as well as the lower 4 bits of the row
 		addr_sig <= data_b_sig(6 downto 0) & std_logic_vector(unsigned(row_delay1(3 downto 0))) ;
 
+		count_reg <= (others => '0') when unsigned(count_reg) = to_unsigned(2400, 12)  else 
+						  std_logic_vector(unsigned(count_reg) + 1) when rising_edge(write_en) else 
+						  count_reg;
 
-		count_reg <= std_logic_vector(unsigned(count_next) + 1) when rising_edge(write_en) else
-			count_next;
-
-		count_next <= (others => '0') when unsigned(count_reg) = to_unsigned(2400, 12)  else
-					count_reg;
-
+		--Trae explained how this creates the blocks for each character
 		row_col_multiply <= std_logic_vector((unsigned(row_delay1(10 downto 4)) * 80) + unsigned(col_delay2(10 downto 3)));
 
 
