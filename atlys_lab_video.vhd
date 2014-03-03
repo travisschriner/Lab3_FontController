@@ -18,7 +18,7 @@ entity atlys_lab_Font_Controller is
           clk   	: in  std_logic; -- 100 MHz
           reset 	: in  std_logic;
           start   : in  std_logic;
-          switch  : in  std_logic;
+          switch  : in  std_logic_vector (7 downto 0);
 			 led		: out std_logic;
           tmds  	: out std_logic_vector(3 downto 0);
           tmdsb 	: out std_logic_vector(3 downto 0)
@@ -32,7 +32,7 @@ architecture Schriner_top_level of atlys_lab_Font_Controller is
 signal red_s, green_s, blue_s, clock_s, h_sync,  v_sync, v_completed, blank, pixel_clk, serialize_clk, serialize_clk_n, blank_reg, delay1, delay2, WE : std_logic;
 signal h_sync_delay1, h_sync_delay2, v_sync_delay1, v_sync_delay2 : std_logic;
 signal row, column, col_reg, col_delay1, col_delay2, row_reg, row_delay1, row_delay2 : unsigned (10 downto 0);
-signal red, blue, green : std_logic_vector (7 downto 0);
+signal red, blue, green, write_an_ascii : std_logic_vector (7 downto 0);
 
 begin
 
@@ -152,7 +152,7 @@ begin
 		blank => blank_reg ,
 		row => std_logic_vector(row),
 		column => std_logic_vector(column),
-		ascii_to_write => "00000011", -- this is the A ascii
+		ascii_to_write => switch, 
 		write_en => WE,
 		r => red,
 		g => green,

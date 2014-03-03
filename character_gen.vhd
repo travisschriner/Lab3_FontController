@@ -108,12 +108,17 @@ begin
 		row_col_multiply <= std_logic_vector((unsigned(row_delay1(10 downto 4)) * 80) + unsigned(col_delay2(10 downto 3)));
 
 
+--=======================================================
+-----------------Output Logic---------------------
+--=======================================================
 
 		process(mux_out, blank) is
 		begin
+		
 			r <= (others => '0');
 			g <= (others => '0');
 			b <= (others => '0');
+			
 			if(blank = '0') then
 				if(mux_out = '1') then
 					g <= (others => '1');
