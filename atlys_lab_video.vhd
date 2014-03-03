@@ -65,7 +65,7 @@ begin
             );
 				
 --=======================================================
------------------ITS A PIPE! GET IT?!--------------------
+-----------------Blakc--------------------
 --=======================================================
 		process(pixel_clk) is 
 		begin
@@ -74,13 +74,7 @@ begin
 			end if;
 		end process;
 
-		process(pixel_clk) is
-		begin
-			if(rising_edge(pixel_clk)) then
-				delay2 <= delay1;
-				end if;
-		end process;
-
+		
 		process(pixel_clk) is
 		begin
 			if(rising_edge(pixel_clk)) then
@@ -185,7 +179,7 @@ begin
                 red_p     => red,
                 green_p   => green,
                 blue_p    => blue,
-                blank     => blank,
+                blank     => blank_reg,
                 hsync     => h_sync_delay2,
                 vsync     => v_sync_delay2,
                 -- outputs to TMDS drivers
