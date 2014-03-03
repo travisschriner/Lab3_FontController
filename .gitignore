@@ -39,7 +39,7 @@ atlys_lab_font_controller.bgn
 atlys_lab_font_controller.bit
 atlys_lab_font_controller.drc
 atlys_lab_font_controller.prj
-atlys_lab_font_controller.xst
+atlys_lab_font_controller.lst
 atlys_lab_font_controller_summary.html
 atlys_lab_video.bgn
 atlys_lab_video.bit
@@ -107,3 +107,8 @@ webtalk.log
 webtalk_pn.xml
 xlnx_auto_0_xdb
 xst
+*.lso
+*.html
+*.prj
+*.stx
+*.xst
