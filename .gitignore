@@ -36,13 +36,11 @@ atlys_lab_Font_Controller_summary.xml
 atlys_lab_Font_Controller_usage.xml
 atlys_lab_Font_Controller_xst.xrpt
 atlys_lab_font_controller.bgn
-atlys_lab_font_controller.bit
 atlys_lab_font_controller.drc
 atlys_lab_font_controller.prj
 atlys_lab_font_controller.lst
 atlys_lab_font_controller_summary.html
 atlys_lab_video.bgn
-atlys_lab_video.bit
 atlys_lab_video.bld
 atlys_lab_video.cmd_log
 atlys_lab_video.drc
@@ -58,6 +56,7 @@ atlys_lab_video.stx
 atlys_lab_video.syr
 atlys_lab_video.twr
 atlys_lab_video.twx
+atlys_lab_video.bit
 atlys_lab_video.unroutes
 atlys_lab_video.ut
 atlys_lab_video.xst
