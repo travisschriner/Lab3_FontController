@@ -1,6 +1,8 @@
 ----------------------------------------------------------------------------------
--- Company: 
--- Engineer: 
+-- Company: USAFA DFEC
+-- Engineer: C2C Trae Barnett
+--
+--Because an 8 to 1 mux is so commonplace, I mirrored trae's code to save time. 
 -- 
 -- Create Date:    11:07:36 02/21/2014 
 -- Design Name: 
@@ -38,7 +40,5 @@ begin
 			output <= data(0);
 		end if;
 	end process;
-
-
 
 end Behavioral;

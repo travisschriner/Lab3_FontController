@@ -1,6 +1,10 @@
 ----------------------------------------------------------------------------------
 -- Company: USAFA DFEC
 -- Engineer: C2C Travis Schriner
+--
+--DOCUMENTATION: C2C Trae Barnett explained that input_to_pulse is in fact
+--					  just a button debouncer. After he clarified that, he explained
+--					  his STD and that helped me tremendously to get the thing working. 
 -- 
 -- Create Date:    18:25:31 02/24/2014 
 -- Design Name: 
@@ -22,94 +26,90 @@ end input_to_pulse;
 
 architecture Behavioral of input_to_pulse is
 
-type button_state is (idle, button_pushed, button_held);
+type button_state is (idle, push, hold);
 signal button_reg, button_next : button_state;
 signal count : unsigned(12 downto 0);
-signal pulse_reg, pulse_next, button_old, button_new, button_debounced : std_logic;
+signal pulse, pulse_next, button_cur, button_prev, debounce : std_logic;
 
 begin
 
 
-	-- shift register
+--=========================================
+-----------------REGISTER------------------
+--=========================================
+
+	
 	process(clk,reset,button)
 	begin
 		if( reset = '1') then
-			button_old <= '0';
+			button_prev <= '0';
+			pulse <= '0';
+			button_reg <= idle;
 		elsif(rising_edge(clk)) then
-			button_old <= button;
+			button_prev <= button;
+			pulse <= pulse_next;
+			button_reg <= button_next;
 		end if;
 	end process;
-
-	process(clk,reset,button_old)
+	
+--=========================================
+---------DEBOUNCE_LOGIC--------------------
+--=========================================
+	process(clk,reset,button_prev)
 	begin
 
 		if( reset = '1') then
 			count <= (others => '0');
-			button_new <= '0';			
+			button_cur <= '0';			
 		elsif( rising_edge(clk)) then
 
-			button_debounced <= '0';
+			debounce <= '0';
 
-			if(button_new = button_old) then
+			if(button_cur = button_prev) then
 				count <= count + 1;
 			else
-				button_new <= button_old;
+				button_cur <= button_prev;
 				count <= (others => '0');
 			end if;
 
 			if( count >= 5000 ) then
-				button_debounced <= '1';
+				debounce <= '1';
 				count <= (others => '0');
 			end if;
 		end if;
 
 	end process;
 
+--=========================================
+---------NEXT_STATE_LOGIC------------------
+--=========================================	
 
-
-
-	-- button state register
-	process(clk,reset)
+	process(button_reg,button,debounce)
 	begin
-		if( reset = '1') then
-			button_reg <= idle;
-		elsif (rising_edge(clk)) then
-			button_reg <= button_next;
-		end if;
-	end process;
-
-	process(button_reg,button,button_debounced)
-	begin
+	
 		button_next <= button_reg;
-
 		case button_reg is
 			when  idle =>
 				if(button = '1') then
-					button_next <= button_pushed;
+					button_next <= push;
 				end if;
-			when button_pushed =>
-				button_next <= button_held;
-			when button_held =>
-				if(button = '0' and button_debounced = '1') then
+			when push =>
+				button_next <= hold;
+			when hold =>
+				if(button = '0' and debounce = '1') then
 					button_next <= idle;
 				end if;
 		end case;
-
 	end process;
 
-	process (clk, reset)
-	begin
-		if(reset = '1') then
-			pulse_reg <= '0';
-		elsif(rising_edge(clk)) then
-			pulse_reg <= pulse_next;
-		end if;
-	end process;	
+--==========================================
+-------Combinational and Output Logic-------
+--==========================================
 
-	pulse_next <= 	'1' when button_next = button_pushed else
+	pulse_next <= 	'1' when button_next = push else
 						'0';
 
-	button_pulse <= pulse_reg;
+	button_pulse <= pulse;
 
 end Behavioral;
 
